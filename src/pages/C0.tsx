@@ -1,0 +1,1 @@
+export default function C0(){return(<div className='container'><div className='card'><b>C0 지휘소</b><div className='caption'>제로 스타트 — 데이터 없이도 동작</div></div></div>)}

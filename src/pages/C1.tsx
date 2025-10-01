@@ -1,0 +1,1 @@
+export default function C1(){return(<div className='container'><div className='card'><b>C1 유입</b></div></div>)}

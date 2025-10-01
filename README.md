@@ -1,0 +1,1 @@
+업로드 방법: 이 폴더 내용을 GitHub 리포지토리 최상단에 그대로 올리세요. Netlify에서 New site from Git로 연결하면 netlify.toml 덕분에 자동 설정됩니다.

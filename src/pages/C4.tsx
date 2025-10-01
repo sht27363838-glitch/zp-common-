@@ -1,0 +1,1 @@
+export default function C4(){return(<div className='container'><div className='card'><b>C4 보상엔진</b></div></div>)}
