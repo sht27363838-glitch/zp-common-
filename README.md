@@ -1,14 +1,15 @@
 
-# ZP Command — Ready for Netlify v2
-- C0 지휘소: KPI 카드 + 매출 추세 차트 + 바벨 엣지 도넛
-- C1 유입: 크리에이티브 리그(1,000회당 매출 막대) + 원본 테이블
-- C4 보상엔진: 원장/리밸런스 테이블 (v2.1에서 타임라인/락업 추가 슬롯)
+# ZP Command — v2.1 (Ready for Netlify)
+### 추가된 것
+- C0: 보상 **캡 게이지**, **이상치 배지**, **상태→판단→지시** 3줄
+- C4: **보상 타임라인(누적)**, **락업 캘린더(예정/해제)**
 
 ## 배포
-1) 이 폴더 내용을 GitHub 리포지토리 **최상단**에 업로드
-2) Netlify → New site from Git → 리포 선택 (netlify.toml로 자동)
+1) 이 폴더 내용을 GitHub **리포지토리 최상단**에 업로드
+2) Netlify → New site from Git → 리포 선택 (netlify.toml 자동)
 3) 끝
 
 ## 데이터 교체
-- /src/data/*.csv 의 헤더는 유지하고 행만 추가하세요.
-- settings.csv 의 last_month_profit=0이어도 정상 표시.
+- /src/data/*.csv 헤더 유지, 행만 수정/추가
+- settings.csv 의 last_month_profit, cap_ratio로 캡 게이지 계산
+- ledger.csv 의 lock_until 로 락업 캘린더 표시
