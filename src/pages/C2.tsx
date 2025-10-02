@@ -15,7 +15,6 @@ export default function C2(){
     loadCSV('/src/data/kpi_daily.csv').then((r:any)=>setKpis(r))
   },[])
 
-  // AOV waterfall
   const byOrder = new Map<string, {base:number,upsell:number,bundle:number,discount:number}>()
   items.forEach((it:any)=>{
     const o = byOrder.get(it.order_id) || {base:0,upsell:0,bundle:0,discount:0}
@@ -23,7 +22,7 @@ export default function C2(){
     if(it.kind==='base') o.base += v
     if(it.kind==='upsell') o.upsell += v
     if(it.kind==='bundle') o.bundle += v
-    if(it.kind==='discount') o.discount += v // negative
+    if(it.kind==='discount') o.discount += v
     byOrder.set(it.order_id, o)
   })
   const orders = Array.from(byOrder.values())
@@ -40,7 +39,6 @@ export default function C2(){
   ]
   const aov = wf.reduce((a,x)=>a+x.value,0)
 
-  // Heatmap (Revenue share by SKU x Source)
   const revenueCells = new Map<string, number>()
   const skuSet = new Set<string>()
   const srcSet = new Set<string>()
@@ -56,7 +54,6 @@ export default function C2(){
   const sources = Array.from(srcSet).slice(0,4)
   const maxCell = Math.max(1, ...Array.from(revenueCells.values()))
 
-  // Checkout funnel (7-day aggregate)
   const last7 = kpis.slice(-7)
   const agg = last7.reduce((a:any,r:any)=>{
     a.visits += Number(r.visits||0)
@@ -116,7 +113,7 @@ export default function C2(){
       <div className='hint'>진한 셀 = 해당 SKU·소스의 수익 기여도가 큰 구간</div>
       <div className='heat'>
         <div className='heat-row'>
-          <div className='caption'>SKU \ Source</div>
+          <div className='caption'>SKU \\ Source</div>
           {sources.map(s=> <div key={s} className='caption' style={{textAlign:'center'}}>{s}</div>)}
         </div>
         {skus.map(sku=>{

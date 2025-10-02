@@ -9,7 +9,7 @@ export async function loadCSV(path:string): Promise<Record<string,string>[]> {
   return lines.slice(1).map(l=>{
     const vals = l.split(',').map(s=>s.trim())
     const obj: Record<string,string> = {}
-    headers.forEach((h,i)=> obj[h] = vals[i] ?? '')
+    headers.forEach((h,i)=> obj[h] = vals[i] ?? '' )
     return obj
   })
 }

@@ -2,23 +2,23 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { KpiCard } from '../components/KpiCard';
 import { loadCSV } from '../lib/csv';
-import { CR, ROAS, AOV, ReturnsRate } from '../lib/calc';
-import Donut from '../components/Donut';
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
-
-type KRow = { date:string, channel:string, visits:string, clicks:string, carts:string, orders:string, revenue:string, ad_cost:string, returns:string, reviews:string }
+const safe = (n:number,d:number)=> d===0?0:n/d
+const ROAS = (k:any)=> safe(Number(k.revenue||0), Number(k.ad_cost||0))
+const CR = (k:any)=> safe(Number(k.orders||0), Number(k.visits||0))
+const AOV = (k:any)=> safe(Number(k.revenue||0), Number(k.orders||0))
+const ReturnsRate = (k:any)=> safe(Number(k.returns||0), Number(k.orders||0))
 
 function Badge({type,children}:{type:'danger'|'warn'|'info',children:React.ReactNode}){
   return <span className={`badge ${type}`}>{children}</span>
 }
 
 export default function C0(){
-  const [rows,setRows]=useState<KRow[]>([])
+  const [rows,setRows]=useState<any[]>([])
   const [cap,setCap]=useState({last:0,ratio:0.10})
   const [ledger,setLedger]=useState({stable:0,edge:0})
 
   useEffect(()=>{(async()=>{
-    const ks = await loadCSV('/src/data/kpi_daily.csv') as KRow[]
+    const ks = await loadCSV('/src/data/kpi_daily.csv') as any[]
     setRows(ks)
     const settings=await loadCSV('/src/data/settings.csv')
     if(settings[0]) setCap({last:Number(settings[0].last_month_profit||0),ratio:Number(settings[0].cap_ratio||0.10)})
@@ -41,11 +41,8 @@ export default function C0(){
     }
   },[rows])
 
-  const series = rows.map(r=>({ date:r.date, revenue:Number(r.revenue||0), orders:Number(r.orders||0) }))
   const edgeShare = (ledger.stable+ledger.edge)===0? 0 : ledger.edge/(ledger.stable+ledger.edge)
   const capUsed = cap.last*cap.ratio===0? 0 : (ledger.stable+ledger.edge)/(cap.last*cap.ratio)
-
-  // 간단 배지(데모)
   const ctr = latest.visits? latest.clicks/latest.visits : 0
   const cpa = latest.orders? latest.ad_cost/latest.orders : 0
   const returnsRate = latest.orders? latest.returns/latest.orders : 0
@@ -53,7 +50,7 @@ export default function C0(){
   const ctrDrop = ctr<0.2
   const returnsHigh = returnsRate>0.03
 
-  const state = `ROAS ${ROAS(latest as any).toFixed(2)}, CR ${(CR(latest as any)*100).toFixed(2)}%, Cap ${(capUsed*100).toFixed(0)}%`
+  const state = `ROAS ${ROAS(latest).toFixed(2)}, CR ${(CR(latest)*100).toFixed(2)}%, Cap ${(capUsed*100).toFixed(0)}%`
   let assess = '안정'
   if(cpaSpike) assess = 'CAC 상승'
   else if(ctrDrop) assess = 'CTR 급락'
@@ -67,10 +64,10 @@ export default function C0(){
   return (<div className='container'>
     <div className='grid grid-3'>
       <KpiCard label='매출' value={latest.revenue}/>
-      <KpiCard label='ROAS' value={Number(ROAS(latest as any).toFixed(2))}/>
-      <KpiCard label='CR' value={Number((CR(latest as any)*100).toFixed(2))} suffix='%' />
-      <KpiCard label='AOV' value={Number(AOV(latest as any).toFixed(0))}/>
-      <KpiCard label='반품률' value={Number((ReturnsRate(latest as any)*100).toFixed(2))} suffix='%' />
+      <KpiCard label='ROAS' value={Number(ROAS(latest).toFixed(2))}/>
+      <KpiCard label='CR' value={Number((CR(latest)*100).toFixed(2))} suffix='%' />
+      <KpiCard label='AOV' value={Number(AOV(latest).toFixed(0))}/>
+      <KpiCard label='반품률' value={Number((ReturnsRate(latest)*100).toFixed(2))} suffix='%' />
       <KpiCard label='보상총액' value={ledger.stable+ledger.edge}/>
     </div>
 
@@ -96,26 +93,6 @@ export default function C0(){
     <div className='card'>
       <b>상태 → 판단 → 지시</b>
       <div className='hint'>{state} / {assess} / {command}</div>
-    </div>
-
-    <div style={{height:12}}/>
-
-    <div className='grid grid-2'>
-      <div className='card'>
-        <b>매출 추세(14일)</b>
-        <div style={{height:8}}/>
-        <div style={{width:'100%', height:240}}>
-          <ResponsiveContainer>
-            <AreaChart data={series}>
-              <XAxis dataKey='date' tick={{fontSize:12}}/>
-              <YAxis tick={{fontSize:12}}/>
-              <Tooltip/>
-              <Area type='monotone' dataKey='revenue' stroke='var(--accent)' fill='var(--accent)' fillOpacity={0.15} strokeWidth={2}/>
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
-      <Donut ratio={edgeShare} label='목표 밴드 15~30%'/>
     </div>
   </div>)
 }
