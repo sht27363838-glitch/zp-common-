@@ -102,8 +102,8 @@ export default function C0(){
     <div className='badges'>
       {cpaSpike && <Badge type='danger'>CAC 스파이크</Badge>}
       {ctrDrop && <Badge type='warn'>CTR 급락</Badge>}
-      {returnsHigh && <Badge type='warn'>반품률 > 3%</Badge>}
-      {edgeShare>0.30 && <Badge type='info'>엣지 > 30% (리밸런싱 필요)</Badge>}
+      {returnsHigh && <Badge type='warn'>반품률 &gt; 3%</Badge>}
+      {edgeShare>0.30 && <Badge type='info'>엣지 &gt; 30% (리밸런싱 필요)</Badge>}
     </div>
 
     <div style={{height:12}}/>
