@@ -1,0 +1,1 @@
+import React from 'react';export const KpiCard=({label,value,suffix='' }:{label:string;value:number;suffix?:string})=>(<div className='card kpi'><div className='label'>{label}</div><div className='value'>{Number.isFinite(value)?value.toLocaleString():0}{suffix}</div></div>);

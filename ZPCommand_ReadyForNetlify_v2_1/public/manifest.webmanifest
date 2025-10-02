@@ -1,0 +1,20 @@
+{
+  "name": "ZP Command — v2.1",
+  "short_name": "ZPCommand",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0F1216",
+  "theme_color": "#0EA5E9",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
