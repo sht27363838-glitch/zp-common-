@@ -1,3 +1,4 @@
+
 :root{--bg:#0F1216;--panel:#161A1E;--border:#232A31;--txt:#E6EAF0;--muted:#9BA7B4;--accent:#0EA5E9;--success:#22C55E;--warn:#F59E0B;--danger:#EF4444;--info:#8B5CF6}
 *{box-sizing:border-box}
 html,body,#root{height:100%;margin:0;background:var(--bg);color:var(--txt);font-family:Inter,Pretendard,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
@@ -25,3 +26,8 @@ html,body,#root{height:100%;margin:0;background:var(--bg);color:var(--txt);font-
 .hint{font-size:12px;color:var(--muted);margin-top:6px}
 .lock-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
 .lock-item{border:1px solid var(--border);border-radius:12px;padding:10px}
+.heat{display:grid;gap:6px}
+.heat-row{display:grid;grid-template-columns:140px repeat(4,1fr);gap:6px;align-items:center}
+.heat-cell{height:28px;border-radius:6px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:12px}
+.funnel{display:flex;gap:10px;align-items:center}
+.fbar{height:10px;background:var(--accent);border-radius:6px}

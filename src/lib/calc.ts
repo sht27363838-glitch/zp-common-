@@ -10,9 +10,3 @@ export const capUsage = (stable:number, edge:number, last:number, capRatio:numbe
   const cap = last*capRatio
   return cap===0 ? 0 : (stable+edge)/cap
 }
-export const movingAvg = (arr:number[], n:number)=>{
-  if(n<=0) return 0
-  const take = arr.slice(-n)
-  const s = take.reduce((a,b)=>a+b,0)
-  return take.length? s/take.length : 0
-}

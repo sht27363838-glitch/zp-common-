@@ -14,7 +14,6 @@ export default function C4(){
     loadCSV('/src/data/rebalance_log.csv').then(setRebalance)
   },[])
 
-  // Step-like cumulative timeline
   const byDate = new Map<string,{date:string,stable:number,edge:number}>()
   ledger.forEach(r=>{
     const d = r.date
@@ -29,7 +28,6 @@ export default function C4(){
     return {date:p.date, stable:cumS, edge:cumE}
   })
 
-  // Lockup calendar (next/unlocked)
   const today = new Date().toISOString().slice(0,10)
   const locks = ledger
     .filter(r=>r.lock_until)

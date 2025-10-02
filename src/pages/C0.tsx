@@ -2,7 +2,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { KpiCard } from '../components/KpiCard';
 import { loadCSV } from '../lib/csv';
-import { CR, ROAS, AOV, ReturnsRate, capUsage, movingAvg } from '../lib/calc';
+import { CR, ROAS, AOV, ReturnsRate } from '../lib/calc';
 import Donut from '../components/Donut';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
@@ -43,31 +43,16 @@ export default function C0(){
 
   const series = rows.map(r=>({ date:r.date, revenue:Number(r.revenue||0), orders:Number(r.orders||0) }))
   const edgeShare = (ledger.stable+ledger.edge)===0? 0 : ledger.edge/(ledger.stable+ledger.edge)
-  const capUsed = capUsage(ledger.stable, ledger.edge, cap.last, cap.ratio)
+  const capUsed = cap.last*cap.ratio===0? 0 : (ledger.stable+ledger.edge)/(cap.last*cap.ratio)
 
-  // ── 이상치 감지(간단 규칙)
-  const clicks = rows.map(r=>Number(r.clicks||0))
-  const visits = rows.map(r=>Number(r.visits||0))
-  const orders = rows.map(r=>Number(r.orders||0))
-  const adcost = rows.map(r=>Number(r.ad_cost||0))
-  const returns = rows.map(r=>Number(r.returns||0))
+  // 간단 배지(데모)
+  const ctr = latest.visits? latest.clicks/latest.visits : 0
+  const cpa = latest.orders? latest.ad_cost/latest.orders : 0
+  const returnsRate = latest.orders? latest.returns/latest.orders : 0
+  const cpaSpike = cpa>15000
+  const ctrDrop = ctr<0.2
+  const returnsHigh = returnsRate>0.03
 
-  const ctrSeries = clicks.map((v,i)=> visits[i] ? v/visits[i] : 0)
-  const cpaSeries = orders.map((v,i)=> v ? adcost[i]/v : 0)
-  const retSeries = orders.map((v,i)=> v ? returns[i]/v : 0)
-
-  const ctrMAprev = ctrSeries.length>=6 ? movingAvg(ctrSeries.slice(0,-3),3) : 0
-  const ctrMAlast = ctrSeries.length>=3 ? movingAvg(ctrSeries,3) : 0
-  const ctrDrop = ctrMAprev>0 && ctrMAlast < ctrMAprev*0.8
-
-  const cpaMAprev = cpaSeries.length>=6 ? movingAvg(cpaSeries.slice(0,-3),3) : 0
-  const cpaMAlast = cpaSeries.length>=3 ? movingAvg(cpaSeries,3) : 0
-  const cpaSpike = cpaMAprev>0 && cpaMAlast > cpaMAprev*1.4
-
-  const retMAlast = retSeries.length>=7 ? movingAvg(retSeries.slice(-7),7) : movingAvg(retSeries, retSeries.length||1)
-  const returnsHigh = retMAlast > 0.03
-
-  // ── 3줄 요약 (상태→판단→지시)
   const state = `ROAS ${ROAS(latest as any).toFixed(2)}, CR ${(CR(latest as any)*100).toFixed(2)}%, Cap ${(capUsed*100).toFixed(0)}%`
   let assess = '안정'
   if(cpaSpike) assess = 'CAC 상승'
