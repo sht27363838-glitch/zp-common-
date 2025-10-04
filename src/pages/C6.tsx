@@ -1,34 +1,31 @@
 
 import React from 'react'
 import { loadCSV } from '../lib/csv'
-import { uplift, winner, safe } from '../lib/calc'
 import { SimpleTable } from '../components/SimpleTable'
 import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 
 type Exp = { exp_id:string, hypothesis:string, metric:'CTR'|'CVR', control_impr:string, control_conv:string, variant_impr:string, variant_conv:string, start_date:string, end_date:string, decision:string, notes:string }
+const safe = (n:number,d:number)=> d===0?0:n/d
 
 export default function C6(){
   const [rows,setRows]=React.useState<Exp[]>([])
   React.useEffect(()=>{ loadCSV('/src/data/experiments.csv').then((r:any)=>setRows(r)) },[])
 
-  const table = rows.map(r=>{
+  const table = rows.map((r:any)=>{
     const ci = Number(r.control_impr||0), cc = Number(r.control_conv||0)
     const vi = Number(r.variant_impr||0), vc = Number(r.variant_conv||0)
     const rc = safe(cc,ci), rv = safe(vc,vi)
     const u = rc===0? 0 : (rv-rc)/rc
     const ok = (ci>=500 && vi>=500 && u>=0.10)
     return {
-      EXP:r.exp_id,
-      가설:r.hypothesis,
-      지표:r.metric,
+      EXP:r.exp_id, 가설:r.hypothesis, 지표:r.metric,
       표본:`C ${ci.toLocaleString()} / V ${vi.toLocaleString()}`,
       전환:`C ${cc.toLocaleString()} / V ${vc.toLocaleString()}`,
-      uplift:`${(u*100).toFixed(1)}%`,
-      판정: ok ? '승' : '패'
+      uplift:`${(u*100).toFixed(1)}%`, 판정: ok ? '승' : '패'
     }
   })
 
-  const scatter = rows.map(r=>{
+  const scatter = rows.map((r:any)=>{
     const ci = Number(r.control_impr||0), cc = Number(r.control_conv||0)
     const vi = Number(r.variant_impr||0), vc = Number(r.variant_conv||0)
     const rc = safe(cc, ci), rv = safe(vc, vi)

@@ -1,0 +1,14 @@
+{
+  "scale": {
+    "roas_gte": 2.3,
+    "cpa_to_aov_lte": 0.3,
+    "ctr_gte": 0.012
+  },
+  "keep": {
+    "roas_gte": 1.7,
+    "cpa_to_aov_lte": 0.35
+  },
+  "kill": {
+    "otherwise": true
+  }
+}

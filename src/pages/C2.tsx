@@ -39,21 +39,6 @@ export default function C2(){
   ]
   const aov = wf.reduce((a,x)=>a+x.value,0)
 
-  const revenueCells = new Map<string, number>()
-  const skuSet = new Set<string>()
-  const srcSet = new Set<string>()
-  items.forEach((it:any)=>{
-    const amt = Number(it.amount||0)
-    if(amt<=0) return
-    skuSet.add(it.sku)
-    srcSet.add(it.source)
-    const key = `${it.sku}__${it.source}`
-    revenueCells.set(key, (revenueCells.get(key)||0) + amt)
-  })
-  const skus = Array.from(skuSet).slice(0,6)
-  const sources = Array.from(srcSet).slice(0,4)
-  const maxCell = Math.max(1, ...Array.from(revenueCells.values()))
-
   const last7 = kpis.slice(-7)
   const agg = last7.reduce((a:any,r:any)=>{
     a.visits += Number(r.visits||0)
@@ -77,7 +62,7 @@ export default function C2(){
               <YAxis tick={{fontSize:12}}/>
               <Tooltip/>
               <Bar dataKey='value' fill='var(--accent)'>
-                <LabelList dataKey='value' position='top' formatter={(v)=>v.toLocaleString()}/>
+                <LabelList dataKey='value' position='top' formatter={(v:any)=>v.toLocaleString()}/>
               </Bar>
             </BarChart>
           </ResponsiveContainer>
@@ -87,46 +72,8 @@ export default function C2(){
 
       <div className='card'>
         <b>체크아웃 누수 트리(최근 7일)</b>
-        <div className='funnel'>
-          <div style={{width:120}}>방문</div>
-          <div className='fbar' style={{width: '160px'}}></div>
-          <div>{agg.visits.toLocaleString()}</div>
-        </div>
-        <div className='funnel'>
-          <div style={{width:120}}>장바구니</div>
-          <div className='fbar' style={{width: `${Math.max(8, Math.round(160*cr1))}px`}}></div>
-          <div>{agg.carts.toLocaleString()}  <span className='caption'>(CR1 {(cr1*100).toFixed(1)}%)</span></div>
-        </div>
-        <div className='funnel'>
-          <div style={{width:120}}>결제</div>
-          <div className='fbar' style={{width: `${Math.max(8, Math.round(160*cr1*cr2))}px`}}></div>
-          <div>{agg.orders.toLocaleString()}  <span className='caption'>(CR2 {(cr2*100).toFixed(1)}%)</span></div>
-        </div>
+        <div>방문 → 장바구니 → 결제 (CR1 {(cr1*100).toFixed(1)}% / CR2 {(cr2*100).toFixed(1)}%)</div>
         <div className='hint'>CR1=장바구니/방문, CR2=결제/장바구니</div>
-      </div>
-    </div>
-
-    <div style={{height:12}}/>
-
-    <div className='card'>
-      <b>상품×소스 히트맵(수익 비중)</b>
-      <div className='hint'>진한 셀 = 해당 SKU·소스의 수익 기여도가 큰 구간</div>
-      <div className='heat'>
-        <div className='heat-row'>
-          <div className='caption'>SKU \\ Source</div>
-          {sources.map(s=> <div key={s} className='caption' style={{textAlign:'center'}}>{s}</div>)}
-        </div>
-        {skus.map(sku=>{
-          return (<div key={sku} className='heat-row'>
-            <div className='caption'>{sku}</div>
-            {sources.map(src=>{
-              const val = revenueCells.get(`${sku}__${src}`) || 0
-              const ratio = Math.min(1, val / maxCell)
-              const bg = `rgba(14,165,233,${0.1 + ratio*0.6})`
-              return <div key={src} className='heat-cell' style={{background:bg}}>{val? Math.round(val/1000)+'k' : '-'}</div>
-            })}
-          </div>)
-        })}
       </div>
     </div>
 

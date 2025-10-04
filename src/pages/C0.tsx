@@ -70,26 +70,20 @@ export default function C0(){
       <KpiCard label='반품률' value={Number((ReturnsRate(latest)*100).toFixed(2))} suffix='%' />
       <KpiCard label='보상총액' value={ledger.stable+ledger.edge}/>
     </div>
-
     <div style={{height:12}}/>
-
     <div className='card'>
       <b>보상 캡 사용률</b>
       <div className='gauge'><div style={{width:`${Math.min(100, Math.round(capUsed*100))}%`}}/></div>
       <div className='hint'>집행합계 / (전월 순익 × {Math.round(cap.ratio*100)}%) — last={cap.last.toLocaleString()}원</div>
     </div>
-
     <div style={{height:12}}/>
-
     <div className='badges'>
       {cpaSpike && <Badge type='danger'>CAC 스파이크</Badge>}
       {ctrDrop && <Badge type='warn'>CTR 급락</Badge>}
       {returnsHigh && <Badge type='warn'>반품률 &gt; 3%</Badge>}
       {edgeShare>0.30 && <Badge type='info'>엣지 &gt; 30% (리밸런싱 필요)</Badge>}
     </div>
-
     <div style={{height:12}}/>
-
     <div className='card'>
       <b>상태 → 판단 → 지시</b>
       <div className='hint'>{state} / {assess} / {command}</div>
