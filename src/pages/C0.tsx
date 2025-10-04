@@ -1,4 +1,4 @@
-
+// src/pages/C0.tsx
 import React, { useEffect, useMemo, useState } from 'react';
 import { KpiCard } from '../components/KpiCard';
 import { loadCSV } from '../lib/csv';
@@ -8,7 +8,7 @@ const CR = (k:any)=> safe(Number(k.orders||0), Number(k.visits||0))
 const AOV = (k:any)=> safe(Number(k.revenue||0), Number(k.orders||0))
 const ReturnsRate = (k:any)=> safe(Number(k.returns||0), Number(k.orders||0))
 
-function Badge({type,children}:{type:'danger'|'warn'|'info',children:React.ReactNode}){
+function Badge({type,children}:{type:'danger'|'warn'|'info'|'success',children:React.ReactNode}){
   return <span className={`badge ${type}`}>{children}</span>
 }
 
@@ -28,16 +28,11 @@ export default function C0(){
   })()},[])
 
   const latest = useMemo(()=>{
-    if(rows.length===0) return { visits:0, clicks:0, carts:0, orders:0, revenue:0, ad_cost:0, returns:0 }
+    if(rows.length===0) return { visits:0, clicks:0, carts:0, orders:0, revenue:0, ad_cost:0, returns:0, freq:0 }
     const r = rows[rows.length-1]
     return {
-      visits:Number(r.visits||0),
-      clicks:Number(r.clicks||0),
-      carts:Number(r.carts||0),
-      orders:Number(r.orders||0),
-      revenue:Number(r.revenue||0),
-      ad_cost:Number(r.ad_cost||0),
-      returns:Number(r.returns||0)
+      visits:+(r.visits||0), clicks:+(r.clicks||0), carts:+(r.carts||0), orders:+(r.orders||0),
+      revenue:+(r.revenue||0), ad_cost:+(r.ad_cost||0), returns:+(r.returns||0), freq:+(r.freq||0)
     }
   },[rows])
 
@@ -46,19 +41,25 @@ export default function C0(){
   const ctr = latest.visits? latest.clicks/latest.visits : 0
   const cpa = latest.orders? latest.ad_cost/latest.orders : 0
   const returnsRate = latest.orders? latest.returns/latest.orders : 0
+
+  // 디버프 규칙
   const cpaSpike = cpa>15000
-  const ctrDrop = ctr<0.2
-  const returnsHigh = returnsRate>0.03
+  const ctrDrop = ctr<0.006      // 0.6%
+  const avg7 = rows.slice(-7).reduce((a:any,r:any)=>a + ((+r.orders? (+r.returns||0)/(+r.orders):0)),0) / Math.max(1, rows.slice(-7).length)
+  const returnsHigh7 = avg7>0.03
+  const freqOk = rows[rows.length-1]?.freq !== undefined
+  const avgFreq2 = rows.slice(-2).reduce((a:any,r:any)=> a + (+r.freq||0), 0) / Math.max(1, rows.slice(-2).length)
+  const adFatigue = freqOk && ctrDrop && avgFreq2>=3.0   // 48h: 최근 2일 평균
 
   const state = `ROAS ${ROAS(latest).toFixed(2)}, CR ${(CR(latest)*100).toFixed(2)}%, Cap ${(capUsed*100).toFixed(0)}%`
   let assess = '안정'
   if(cpaSpike) assess = 'CAC 상승'
   else if(ctrDrop) assess = 'CTR 급락'
-  else if(returnsHigh) assess = '반품 경보'
+  else if(returnsHigh7) assess = '반품 경보'
   const command =
     cpaSpike ? '세트 A 중지, B 예산 20% 이동' :
     ctrDrop ? '새 훅 2건 제작, 피로 애드셋 오프' :
-    returnsHigh ? 'PDP 상단 클레임 Top3 노출' :
+    returnsHigh7 ? 'PDP 상단 클레임 Top3 노출' :
     '승자 유지, 내일 재평가'
 
   return (<div className='container'>
@@ -70,19 +71,24 @@ export default function C0(){
       <KpiCard label='반품률' value={Number((ReturnsRate(latest)*100).toFixed(2))} suffix='%' />
       <KpiCard label='보상총액' value={ledger.stable+ledger.edge}/>
     </div>
+
     <div style={{height:12}}/>
     <div className='card'>
       <b>보상 캡 사용률</b>
       <div className='gauge'><div style={{width:`${Math.min(100, Math.round(capUsed*100))}%`}}/></div>
       <div className='hint'>집행합계 / (전월 순익 × {Math.round(cap.ratio*100)}%) — last={cap.last.toLocaleString()}원</div>
     </div>
+
     <div style={{height:12}}/>
     <div className='badges'>
       {cpaSpike && <Badge type='danger'>CAC 스파이크</Badge>}
       {ctrDrop && <Badge type='warn'>CTR 급락</Badge>}
-      {returnsHigh && <Badge type='warn'>반품률 &gt; 3%</Badge>}
+      {returnsHigh7 && <Badge type='warn'>반품률 7일 &gt; 3%</Badge>}
       {edgeShare>0.30 && <Badge type='info'>엣지 &gt; 30% (리밸런싱 필요)</Badge>}
+      {adFatigue && <Badge type='info'>엣지 잠금(광고 피로)</Badge>}
+      {returnsHigh7 && <Badge type='danger'>보상 50% 감액(반품 7일 &gt; 3%)</Badge>}
     </div>
+
     <div style={{height:12}}/>
     <div className='card'>
       <b>상태 → 판단 → 지시</b>
