@@ -1,0 +1,14 @@
+{
+  "daily_loop": {
+    "stable_pct": 0.2,
+    "edge_pct": 0.0
+  },
+  "weekly_boss_win": {
+    "stable_pct": 2.0,
+    "edge_pct": 0.5
+  },
+  "monthly_boss_win": {
+    "stable_pct": 5.0,
+    "edge_pct": 1.0
+  }
+}

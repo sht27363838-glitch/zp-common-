@@ -1,0 +1,7 @@
+{
+  "cap_ratio": 0.1,
+  "lockups": {
+    "stable_days": 7,
+    "edge_days": 30
+  }
+}
