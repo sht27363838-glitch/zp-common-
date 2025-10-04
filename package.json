@@ -1,25 +1,25 @@
 {
-  "name": "zp-command-ready-netlify-v2-4",
+  "name": "zp-command-v3.0",
+  "version": "3.0.0",
   "private": true,
-  "version": "2.4.0",
-  "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
   },
   "dependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-router-dom": "^6.25.1",
-    "recharts": "^2.12.7",
-    "papaparse": "^5.4.1"
+    "next": "14.2.5",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "@supabase/supabase-js": "2.45.4"
   },
   "devDependencies": {
-    "@types/react": "^18.3.7",
-    "@types/react-dom": "^18.3.0",
-    "@vitejs/plugin-react": "^4.3.4",
-    "typescript": "^5.6.2",
-    "vite": "^5.4.10"
+    "typescript": "5.4.5",
+    "@types/node": "20.11.19",
+    "@types/react": "18.2.66",
+    "@types/react-dom": "18.2.22",
+    "eslint": "8.57.0",
+    "eslint-config-next": "14.2.5"
   }
 }
