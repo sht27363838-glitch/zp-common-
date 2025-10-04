@@ -1,4 +1,4 @@
-// src/pages/C0.tsx
+/src/pages/
 import React, { useEffect, useMemo, useState } from 'react';
 import { KpiCard } from '../components/KpiCard';
 import { loadCSV } from '../lib/csv';
